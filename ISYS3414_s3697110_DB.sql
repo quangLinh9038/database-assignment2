@@ -74,6 +74,7 @@ CREATE TABLE Log
 (
     log_id     INTEGER     NOT NULL,
     result     VARCHAR(50),
+    complaints VARCHAR(50),
     equip_code INTEGER(10) NOT NULL,
     cus_ID     INTEGER(10) NOT NULL,
     PRIMARY KEY (log_id, equip_code, cus_ID)
@@ -249,11 +250,13 @@ INSERT INTO replacement (actual_date, equip_code, cus_ID) VALUES ('2020-04-28', 
 INSERT INTO replacement (actual_date, equip_code, cus_ID) VALUES ('2020-05-04', 400105, 4697272);
 INSERT INTO replacement (actual_date, equip_code, cus_ID) VALUES ('2020-03-25', 500505, 4698612);
 
-INSERT INTO Log (log_id, result, equip_code, cus_ID) VALUES (001, 'refund', 100600, 3697822);
-INSERT INTO Log (log_id, result, equip_code, cus_ID) VALUES (002, 'refund', 200340, 3697110);
-INSERT INTO Log (log_id, result, equip_code, cus_ID) VALUES (003, 'replace', 300217, 3695769);
-INSERT INTO Log (log_id, result, equip_code, cus_ID) VALUES (004, 'refund', 400105, 4697272);
-INSERT INTO Log (log_id, result, equip_code, cus_ID) VALUES (005, 'replace', 500505, 4698612);
+INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (001, 'refund','electricity supply fail', 100600, 3697822);
+INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (002, 'refund','wrong model', 200340, 3697110);
+INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (003, 'replace','broken wheels', 300217, 3695769);
+INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (004, 'refund','late delivery', 400105, 4697272);
+INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (005, 'replace','safety problems', 500505, 4698612);
+
+
 
 INSERT INTO customer (cus_ID, name, phone_number, address) VALUES (3697822, 'Dat', 012345678,'Hoang Mai');
 INSERT INTO customer (cus_ID, name, phone_number, address) VALUES (3697110, 'Linh', 034567298,'Le Chan');
@@ -293,6 +296,6 @@ from Category C, Equipment E,  Transaction T
 where E.cate_name = C.cate_name
 and T.equip_code = E.equip_code
 and MONTH(hiring_date) = MONTH(CURRENT_DATE)
-group by C.cate_name
+group by C.cate_name;
 
--- test 123
+
