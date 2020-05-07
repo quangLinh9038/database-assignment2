@@ -295,3 +295,4 @@ and T.equip_code = E.equip_code
 and MONTH(hiring_date) = MONTH(CURRENT_DATE)
 group by C.cate_name
 
+-- test-branch
