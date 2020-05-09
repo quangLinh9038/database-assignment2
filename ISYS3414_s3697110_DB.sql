@@ -1,13 +1,12 @@
 
 
-
 SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS Equipment;
 DROP TABLE IF EXISTS Supplier;
 DROP TABLE IF EXISTS Category;
 DROP TABLE IF EXISTS Stock;
 DROP TABLE IF EXISTS Transaction;
-DROP TABLE IF EXISTS Replacement;
+DROP TABLE IF EXISTS `Return`;
 DROP TABLE IF EXISTS Log;
 DROP TABLE IF EXISTS Customer;
 DROP TABLE IF EXISTS PrivateCustomer;
@@ -63,7 +62,7 @@ CREATE TABLE Transaction
     PRIMARY KEY (trans_code, equip_code, cus_ID)
 );
 
-CREATE TABLE Replacement
+CREATE TABLE `Return`
 (
     actual_date DATE        NOT NULL,
     equip_code  INTEGER(10) NOT NULL,
@@ -154,13 +153,13 @@ ADD CONSTRAINT fk_trans_cus
     ON DELETE CASCADE
     ON UPDATE CASCADE;
 
-ALTER TABLE Replacement
+ALTER TABLE `Return`
 ADD CONSTRAINT fk_replace_equip
     FOREIGN KEY (equip_code)
     REFERENCES Equipment(equip_code)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
-ALTER TABLE Replacement
+ALTER TABLE `Return`
 ADD CONSTRAINT fk_replace_cus
     FOREIGN KEY (cus_ID)
     REFERENCES Customer(cus_ID)
@@ -202,6 +201,8 @@ ADD CONSTRAINT fk_bc_cus
 COMMIT;
 
 -- INSERT VALUES
+
+-- Category
 INSERT INTO category (cate_name) VALUES ('Gardening Equipment');
 INSERT INTO category (cate_name) VALUES ('Building Equipment');
 INSERT INTO category (cate_name) VALUES ('Access Equipment');
@@ -211,54 +212,78 @@ INSERT INTO category (cate_name) VALUES ('Power Tools');
 INSERT INTO category (cate_name) VALUES ('Heating and Lightning');
 INSERT INTO category (cate_name) VALUES ('Miscellaneous');
 
+-- Supplier
 INSERT INTO supplier (sup_name, sup_contact, sup_address) VALUES ('Centurion', '0389989797', 'Hai Phong');
 INSERT INTO supplier (sup_name, sup_contact, sup_address) VALUES ('Bosch', 'boschvn@yahoo.com', 'USA');
 INSERT INTO supplier (sup_name, sup_contact, sup_address) VALUES ('Dale Lifting', '0384359897', 'Vung Tau');
 INSERT INTO supplier (sup_name, sup_contact, sup_address) VALUES ('Craftsman', 'crafts@gmail.com', 'Hai Phong');
 INSERT INTO supplier (sup_name, sup_contact, sup_address) VALUES ('Peiyork Emblem', 'peiyorktw@gmail.com', 'Taiwan');
 
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (100600, 'Shovel', 'Gorilla', 25,50, 'Centurion', 'Gardening Equipment');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (100700, 'Hand Pruner', 'Felco', 20,150, 'Amazon', 'Gardening Equipment');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (200340, 'Compaction Plate', 'Evolution Hulk', 100,350, 'Bosch', 'Building Equipment');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (200350, 'Light Tower', 'Wacker Neuson', 100,5, 'Lake Dale', 'Building Equipment');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (300217, 'Scissor Lifts', 'HSS', 150,56, 'Dale Lifting', 'Access Equipment');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (300230, 'Ladder', 'Pro Shelf', 80,87, 'Speedy', 'Access Equipment');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (400105, 'Telescopic Rod', 'Beta Tools', 50,234, 'Craftsman', 'Car Maintenance');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (400130, 'Battery Starter', 'Torxe', 70,74, 'Carid', 'Car Maintenance');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (500505, 'Portable Welders', 'Bell', 70,12, 'Peiyork Emblem', 'Miscellaneous');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (600550, 'Jigsaw', 'Dewalt', 100,87, 'CPOoutlets', 'Power Tools');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (700870, 'Spray Gun', 'Erbauer', 30,67, 'Screwfix', 'Decorating Equipment');
-INSERT INTO equipment (equip_code, equip_name, brand, price,e_quantity, sup_name, cate_name) VALUES (800099, 'Air-conditioner', 'XV20i', 300,123, 'Freshome', 'Heating and Lightning');
 
-INSERT INTO stock (equip_code, equip_name, cate_name, s_quantity) VALUES (100600, 'Shovel', 'Gardening Equipment', 4);
-INSERT INTO stock (equip_code, equip_name, cate_name, s_quantity) VALUES (200340, 'Compaction Plate', 'Building Equipment', 2);
-INSERT INTO stock (equip_code, equip_name, cate_name, s_quantity) VALUES (300217, 'Scissor Lifts', 'Access Equipment', 2);
-INSERT INTO stock (equip_code, equip_name, cate_name, s_quantity) VALUES (400105, 'Telescopic Rod', 'Car Maintenance', 6);
-INSERT INTO stock (equip_code, equip_name, cate_name, s_quantity) VALUES (500505, 'Portable Welders', 'Miscellaneous', 10);
+-- Equipment
+INSERT INTO equipment (equip_code, equip_name, brand, price, sup_name, cate_name, e_quantity)
+VALUES (100600, 'Shovel', 'Gorilla', 25, 'Centurion', 'Gardening Equipment',25),
+       (100700, 'Hand Pruner', 'Felco', 20, 'Craftsman', 'Gardening Equipment',28),
+       (100800, 'Hand Sprayer', 'Chapin', 17, 'Amazon', 'Gardening Equipment',30),
+       (200340, 'Compaction Plate', 'Evolution Hulk', 100, 'Bosch', 'Building Equipment',15),
+       (200350, 'Light Tower', 'Wacker Neuson', 100, 'Peiyork Emblem', 'Building Equipment',27),
+       (200370, 'Submersible Pump', 'Tsurumi Pump', 30, 'Hire Station', 'Building Equipment', 33),
+       (300217, 'Scissor Lifts', 'HSS', 150, 'Dale Lifting', 'Access Equipment',30),
+       (300230, 'Ladder', 'Pro Shelf', 80, 'Centurion', 'Access Equipment',19),
+       (300280, 'Boom Lift Electric', 'Pro Lifts', 250, 'Coates Hire', 'Access Equipment', 12),
+       (400105, 'Telescopic Rod', 'Beta Tools', 50, 'Craftsman', 'Car Maintenance',36),
+       (400130, 'Battery Starter', 'Torxe', 70, 'Bosch', 'Car Maintenance',41),
+       (400180, 'Air Compressor', 'Airmaster', 100, 'Machine Mart', 'Car Maintenance', 16),
+       (500505, 'Portable Welders', 'Bell', 70, 'Peiyork Emblem', 'Miscellaneous',24),
+       (600550, 'Jigsaw', 'Dewalt', 100, 'Centurion', 'Power Tools',17),
+       (700870, 'Spray Gun', 'Erbauer', 30, 'Dale Lifting', 'Decorating Equipment',36),
+       (800099, 'Air-conditioner', 'XV20i', 300, 'Craftsman', 'Heating and Lightning',23);
 
-INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
-VALUES (41, '2020-05-01',4,2,120,537.6,'2020-05-05',100600,3697822);
-INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
-VALUES (55, '2020-04-14',2,3,300,672,'2020-05-03',200340,3697110);
-INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
-VALUES (68, '2020-04-15',1,1,200,224,'2020-04-22',300217,3695769);
-INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
-VALUES (70, '2020-04-28',5,4,350,1470,'2020-05-02',400105,4697272);
-INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
-VALUES (72, '2020-05-02',3,6,290,584.64,'2020-05-04',500505,4698612);
+-- Stock
+INSERT INTO stock (equip_code, equip_name, cate_name, s_quantity)
+VALUES (100600, 'Shovel', 'Gardening Equipment', 25),
+       (100700, 'Hand Pruner', 'Gardening Equipment',28),
+       (100800, 'Hand Sprayer', 'Gardening Equipment',27),
+       (200340, 'Compaction Plate', 'Building Equipment', 15),
+       (200350, 'Light Tower', 'Building Equipment',27),
+       (200370, 'Submersible Pump', 'Building Equipment', 20),
+       (300217, 'Scissor Lifts', 'Access Equipment', 30),
+       (300230, 'Ladder', 'Access Equipment',19),
+       (300280, 'Boom Lift Electric', 'Access Equipment',8),
+       (400105, 'Telescopic Rod', 'Car Maintenance', 36),
+       (400130, 'Battery Starter', 'Car Maintenance',41),
+       (400180, 'Air Compressor', 'Car Maintenance',13),
+       (500505, 'Portable Welders', 'Miscellaneous', 24),
+       (600550, 'Jigsaw', 'Power Tools',17),
+       (700870, 'Spray Gun', 'Decorating Equipment',36),
+       (800099, 'Air-conditioner', 'Heating and Lightning',21);
 
-INSERT INTO replacement (actual_date, equip_code, cus_ID) VALUES ('2020-05-06', 100600, 3697822);
-INSERT INTO replacement (actual_date, equip_code, cus_ID) VALUES ('2020-05-02', 200340, 3697110);
-INSERT INTO replacement (actual_date, equip_code, cus_ID) VALUES ('2020-04-28', 300217, 3695769);
-INSERT INTO replacement (actual_date, equip_code, cus_ID) VALUES ('2020-05-04', 400105, 4697272);
-INSERT INTO replacement (actual_date, equip_code, cus_ID) VALUES ('2020-03-25', 500505, 4698612);
+-- Transaction
+INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
+VALUES (41, '2020-05-01',4,2,120,2150.4,'2020-05-05',100600,3697822);
+INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
+VALUES (55, '2020-04-14',2,3,300,12768,'2020-05-03',200340,3697110);
+INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
+VALUES (68, '2020-04-15',1,1,200,1568,'2020-04-22',300217,3695769);
+INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
+VALUES (70, '2020-04-28',5,4,350,5880,'2020-05-02',400105,4697272);
+INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
+VALUES (72, '2020-05-02',3,6,290,1169.28,'2020-05-04',500505,4698612);
+INSERT INTO transaction (trans_code, hiring_date, t_quantity, delivery_time, cost,total_cost, expected_return_date, equip_code, cus_ID)
+VALUES (89, '2020-05-05',2,4,980,77616,'2020-07-10',800099,4698612);
+
+
+INSERT INTO `return` (actual_date, equip_code, cus_ID) VALUES ('2020-05-06', 100600, 3697822);
+INSERT INTO `return` (actual_date, equip_code, cus_ID) VALUES ('2020-05-02', 200340, 3697110);
+INSERT INTO `return` (actual_date, equip_code, cus_ID) VALUES ('2020-04-28', 300217, 3695769);
+INSERT INTO `return` (actual_date, equip_code, cus_ID) VALUES ('2020-05-04', 400105, 4697272);
+INSERT INTO `return` (actual_date, equip_code, cus_ID) VALUES ('2020-03-25', 500505, 4698612);
 
 INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (001, 'refund','electricity supply fail', 100600, 3697822);
 INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (002, 'refund','wrong model', 200340, 3697110);
 INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (003, 'replace','broken wheels', 300217, 3695769);
 INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (004, 'refund','late delivery', 400105, 4697272);
 INSERT INTO Log (log_id, result,complaints, equip_code, cus_ID) VALUES (005, 'replace','safety problems', 500505, 4698612);
-
 
 
 INSERT INTO customer (cus_ID, name, phone_number, address) VALUES (3697822, 'Dat', 012345678,'Hoang Mai');
@@ -292,7 +317,36 @@ COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
--- QUERY
+-- QUERIES:
+
+-- Query 1.For given particular equipment, show current stock and current items on hire and the name of its category.
+-- Author: Quang Huy
+SELECT E.equip_code, E.equip_name, E.cate_name,
+       (E.e_quantity - IFNULL(SUM(x.t_quantity), 0)) AS in_stock,
+       IFNULL(SUM(x.t_quantity), 0) AS on_hire
+FROM equipment E
+    JOIN Stock st on E.cate_name = st.cate_name
+    LEFT JOIN (
+        SELECT t.equip_code, t.t_quantity
+        FROM transaction t
+        WHERE t.equip_code IN (
+            SELECT t.equip_code
+            FROM transaction t
+            WHERE CURRENT_DATE BETWEEN t.hiring_date AND t.expected_return_date)
+        ORDER BY t.equip_code) AS x on e.equip_code = x.equip_code
+WHERE e.equip_code = '800099'
+GROUP BY e.equip_code, e.cate_name;
+
+-- Query 3: A list of names and addresses of all suppliers along with the total number of equipment from all categories they currently supply.
+-- Author: Quang Huy
+SELECT s.sup_name, s.sup_address, SUM(e.e_quantity) AS total_equip
+FROM supplier s JOIN equipment e on s.sup_name = e.sup_name JOIN stock st on e.equip_code = st.equip_code
+GROUP BY s.sup_name, sup_address;
+
+
+
+
+
 -- 5.Summary of income from hiring equipment for last month. The result should be sub-divided according to equipment categories.
 select C.cate_name, sum(T.total_cost) as Sum_income
 from Category C, Equipment E,  Transaction T
