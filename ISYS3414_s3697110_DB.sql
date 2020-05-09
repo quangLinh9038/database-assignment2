@@ -334,20 +334,46 @@ FROM equipment E
             FROM transaction t
             WHERE CURRENT_DATE BETWEEN t.hiring_date AND t.expected_return_date)
         ORDER BY t.equip_code) AS x on e.equip_code = x.equip_code
-WHERE e.equip_code = '800099'
+# WHERE e.equip_code = '800099'
 GROUP BY e.equip_code, e.cate_name;
 
--- Query 3: A list of names and addresses of all suppliers along with the total number of equipment from all categories they currently supply.
+-- 2. For a particular business customer, show the current items on hire with expected return dates
+-- plus any previous complaints that made by that customer which involved a replacement of equipment or a full refund.
+-- Author: Thanh Dat
+select B.cus_ID, T.equip_code, E.equip_name
+From businesscustomer B, transaction T, equipment E
+where B.cus_ID = T.cus_ID
+and T.equip_code = E.equip_code
+and B.cus_ID = 4698612;
+
+
+-- Query 3: A list of names and addresses of all suppliers along with the total number of equipment
+-- from all categories they currently supply.
 -- Author: Quang Huy
 SELECT s.sup_name, s.sup_address, SUM(e.e_quantity) AS total_equip
 FROM supplier s JOIN equipment e on s.sup_name = e.sup_name JOIN stock st on e.equip_code = st.equip_code
 GROUP BY s.sup_name, sup_address;
 
 
+-- 4
+-- Author: Thanh Dat
+SELECT st.cate_name, SUM(st.s_quantity) AS cate_in_stock,
+       IFNULL(SUM(x.t_quantity), 0) AS cate_on_hire
+FROM stock st
+    LEFT JOIN (
+        SELECT t.equip_code, t.t_quantity
+        FROM transaction t
+        WHERE t.equip_code IN (
+            SELECT t.equip_code
+            FROM transaction t
+            WHERE CURRENT_DATE BETWEEN t.hiring_date AND t.expected_return_date)
+        ORDER BY t.equip_code) AS x on st.equip_code = x.equip_code
+# WHERE st.cate_name = 'Heating and Lightning'
+GROUP BY st.cate_name;
 
 
-
--- 5.Summary of income from hiring equipment for last month. The result should be sub-divided according to equipment categories.
+-- 5.Summary of income from hiring equipment for last month.
+-- The result should be sub-divided according to equipment categories.
 select C.cate_name, sum(T.total_cost) as Sum_income
 from Category C, Equipment E,  Transaction T
 where E.cate_name = C.cate_name
