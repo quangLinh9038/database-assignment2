@@ -1,4 +1,11 @@
-
+/* ISYS3414: Assignemnt 2: ER Modelling
+Group 25:
+Nguyen Quang Linh - s3697110
+Nguyen Thanh Dat - s3697822
+Nguyen Quang Huy - s369727
+File created: 04/05/2020
+File updated:
+*/
 
 SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS Equipment;
@@ -317,8 +324,9 @@ COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
--- QUERIES:
+-- ---------
 
+-- QUERIES:
 -- Query 1.For given particular equipment, show current stock and current items on hire and the name of its category.
 -- Author: Quang Huy
 SELECT E.equip_code, E.equip_name, E.cate_name,
@@ -355,7 +363,9 @@ FROM supplier s JOIN equipment e on s.sup_name = e.sup_name JOIN stock st on e.e
 GROUP BY s.sup_name, sup_address;
 
 
--- 4
+-- 4:For a given category, the total number of equipment (i.e. items) under that category available in stock
+-- and the number currently on hire to customers.
+-- Note: You should have at least three items under each category to display appropriate output.
 -- Author: Thanh Dat
 SELECT st.cate_name, SUM(st.s_quantity) AS cate_in_stock,
        IFNULL(SUM(x.t_quantity), 0) AS cate_on_hire
@@ -368,12 +378,13 @@ FROM stock st
             FROM transaction t
             WHERE CURRENT_DATE BETWEEN t.hiring_date AND t.expected_return_date)
         ORDER BY t.equip_code) AS x on st.equip_code = x.equip_code
-# WHERE st.cate_name = 'Heating and Lightning'
+WHERE st.cate_name = 'Heating and Lightning'
 GROUP BY st.cate_name;
 
 
 -- 5.Summary of income from hiring equipment for last month.
 -- The result should be sub-divided according to equipment categories.
+-- Author: Quang Linh
 select C.cate_name, sum(T.total_cost) as Sum_income
 from Category C, Equipment E,  Transaction T
 where E.cate_name = C.cate_name
