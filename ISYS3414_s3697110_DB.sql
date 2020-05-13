@@ -348,7 +348,7 @@ GROUP BY e.equip_code, e.cate_name;
 -- 2. For a particular business customer, show the current items on hire with expected return dates
 -- plus any previous complaints that made by that customer which involved a replacement of equipment or a full refund.
 -- Author: Thanh Dat
-select B.cus_ID, C.name as Customer, T.equip_code, E.equip_name as equipmennt
+select B.cus_ID, C.name as Customer, T.equip_code,T.expected_return_date, E.equip_name as equipmennt
 From businesscustomer B, transaction T, equipment E, customer C
 where B.cus_ID = T.cus_ID
 and T.equip_code = E.equip_code
