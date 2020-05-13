@@ -329,7 +329,7 @@ COMMIT;
 -- QUERIES:
 -- Query 1.For given particular equipment, show current stock and current items on hire and the name of its category.
 -- Author: Quang Huy
-SELECT E.equip_code, E.equip_name, E.cate_name,
+SELECT E.equip_code as code, E.equip_name as equipment, E.cate_name as category,
        (E.e_quantity - IFNULL(SUM(x.t_quantity), 0)) AS in_stock,
        IFNULL(SUM(x.t_quantity), 0) AS on_hire
 FROM equipment E
@@ -342,16 +342,17 @@ FROM equipment E
             FROM transaction t
             WHERE CURRENT_DATE BETWEEN t.hiring_date AND t.expected_return_date)
         ORDER BY t.equip_code) AS x on e.equip_code = x.equip_code
-# WHERE e.equip_code = '800099'
+WHERE e.equip_code = '800099'
 GROUP BY e.equip_code, e.cate_name;
 
 -- 2. For a particular business customer, show the current items on hire with expected return dates
 -- plus any previous complaints that made by that customer which involved a replacement of equipment or a full refund.
 -- Author: Thanh Dat
-select B.cus_ID, T.equip_code, E.equip_name
-From businesscustomer B, transaction T, equipment E
+select B.cus_ID, C.name as Customer, T.equip_code, E.equip_name as equipmennt
+From businesscustomer B, transaction T, equipment E, customer C
 where B.cus_ID = T.cus_ID
 and T.equip_code = E.equip_code
+and B.cus_ID = C.cus_ID
 and B.cus_ID = 4698612;
 
 
